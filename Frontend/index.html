@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Truth Check – Fake News Detector</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+<aside class="side" id="side">
+  <h1>Truth<br><em>Check</em></h1>
+  <nav id="nav" aria-label="Pages">
+    <button data-p="predict" class="on"><span class="ic">🔍</span>Predict</button>
+    <button data-p="history"><span class="ic">🕘</span>History<span class="badge hide" id="hbadge">0</span></button>
+    <button data-p="dash"><span class="ic">📊</span>Dashboard</button>
+    <button data-p="report"><span class="ic">📄</span>Report</button>
+  </nav>
+  <div class="toggles">
+    <label class="tg"><input type="checkbox" id="tTheme" checked><span class="sw"></span>Dark mode</label>
+    <label class="tg"><input type="checkbox" id="tFx" checked><span class="sw"></span>Effects</label>
+  </div>
+</aside>
+
+<main class="main">
+<div class="ticker" aria-hidden="true"><span>BREAKING: Not everything you read is true &nbsp;•&nbsp; Paste a headline or article &nbsp;•&nbsp; Let the model check it before you share &nbsp;•&nbsp; Think before you forward &nbsp;•&nbsp;</span></div>
+<div class="menu"><button id="menuBtn" aria-label="Open menu">☰</button>Truth Check</div>
+<div class="wrap">
+
+<!-- PREDICT -->
+<section class="page on" id="p-predict">
+  <h2>Is it fake?</h2>
+  <p class="sub">Add the title, subject and text. The model reads all three and tells you whether it looks real or fake, and how sure it is.</p>
+  <div class="card">
+    <div class="inputs">
+      <label><span>Title</span><input class="fld" id="ttl" placeholder="Headline of the article"></label>
+      <label><span>Subject</span><input class="fld" id="sub" list="subs" placeholder="e.g. politicsNews"></label>
+    </div>
+    <datalist id="subs"><option value="politicsNews"><option value="worldnews"><option value="News"><option value="politics"><option value="Government News"><option value="left-news"><option value="US_News"><option value="Middle-east"></datalist>
+    <label><span class="count">Article text</span>
+    <textarea id="txt" maxlength="8000" placeholder="Paste the full article text here…"></textarea></label>
+    <div class="row">
+      <span class="count" id="count">0 / 8000</span>
+      <div class="samples">
+        <button class="ghost" id="clear">Clear</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="samples">
+        <label class="tg"><input type="checkbox" id="tSave" checked><span class="sw"></span>Save to history</label>
+        <label class="tg"><input type="checkbox" id="tRaw"><span class="sw"></span>Show raw response</label>
+      </div>
+      <button class="go" id="go">Check it</button>
+    </div>
+    <div class="error" id="err" role="alert"></div>
+  </div>
+  <div class="card" id="result" aria-live="polite">
+    <div class="stampwrap"><div class="stamp" id="stamp"></div></div>
+    <div>
+      <div class="big" id="pct">0%</div>
+      <div class="count">model confidence</div>
+      <div class="meter"><b id="bar"></b></div>
+      <div class="split"><span>Fake</span><span>Real</span></div>
+      <p id="verdict" style="margin-top:12px"></p>
+    </div>
+    <pre class="hide" id="raw"></pre>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section class="page" id="p-history">
+  <h2>History</h2>
+  <p class="sub">Everything you have checked. Open an item to run it again.</p>
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <input type="search" id="q" placeholder="Search checked text">
+      <div class="seg" id="hf">
+        <button class="ghost on" data-f="all">All</button>
+        <button class="ghost" data-f="fake">Fake</button>
+        <button class="ghost" data-f="real">Real</button>
+      </div>
+      <button class="ghost" id="hclear">Clear history</button>
+    </div>
+    <div class="list" id="hlist"></div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="page" id="p-dash">
+  <h2>Dashboard</h2>
+  <div class="row range" style="margin:0 0 14px"><p class="sub" style="margin:0">How the model has been judging news.</p><div class="seg"><button class="ghost on" data-r="7">7 days</button><button class="ghost" data-r="30">30 days</button><button class="ghost" data-r="0">All time</button></div></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="charts">
+    <div class="card"><h3>Fake vs real</h3><div id="c1"></div></div>
+    <div class="card"><h3>Checks per day</h3><div id="c2"></div></div>
+    <div class="card"><h3>Confidence spread</h3><div id="c3"></div></div>
+  </div>
+  <h2 style="margin:30px 0 12px;font-size:28px">Model performance</h2>
+  <div class="kpis" id="mkpis"></div>
+  <div class="charts">
+    <div class="card"><h3>Confusion matrix</h3><div id="cm"></div></div>
+    <div class="card"><h3>Confusion table</h3><div id="ct"></div></div>
+  </div>
+</section>
+
+<!-- REPORT -->
+<section class="page" id="p-report">
+  <h2>Report</h2>
+  <div class="row range" style="margin:0 0 14px"><p class="sub" style="margin:0">A summary you can print or export.</p><div class="seg"><button class="ghost on" data-r="7">7 days</button><button class="ghost" data-r="30">30 days</button><button class="ghost" data-r="0">All time</button></div></div>
+  <div class="rep" id="rep"></div>
+  <div class="row noprint"><span></span><div class="samples"><button class="ghost" id="csv">Download CSV</button><button class="go" id="print" style="font-size:18px;padding:10px 22px;animation:none">Print / save PDF</button></div></div>
+</section>
+<footer>A model can be wrong. Verify important stories with trusted sources.</footer>
+</div>
+</main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
